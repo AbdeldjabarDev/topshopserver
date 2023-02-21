@@ -21,7 +21,6 @@ const fs = require('fs');
 export class ProductsController {
   constructor(
     private readonly productsService: ProductsService,
-    private readonly accountService: AccountsService,
   ) {}
   @Get()
   @Header('Content-Type', 'application/json')

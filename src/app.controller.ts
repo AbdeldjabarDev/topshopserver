@@ -11,7 +11,7 @@ const stripe = require('stripe')(process.env.STRIPE_TEST_API_KEY);
 export class AppController {
   constructor(private readonly accountsService:AccountsService,private readonly productsService:ProductsService) {}
 @Post('/accounts/create')
-@Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app')
+@Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app,http://localhost:3000')
 async create(@Req() req,@Res() res)
 {
 let e = req.body.email;

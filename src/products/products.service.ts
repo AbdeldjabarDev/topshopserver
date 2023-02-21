@@ -24,20 +24,12 @@ export class ProductsService
     }
     async bootstrap()
     {
-      let dontinsert = false;
-      let colls = await this.db.listCollections();
-      await colls.forEach((col)=>{
-        if(col.name == 'products' || col.name == 'images')
-        {
-           dontinsert = true;
-        }
-        
-      })
-        if(!dontinsert)
-        {
-          this.insertProducts();
-        }
-       
+      let cols = await this.db.collections()
+      let products_collection = cols.find((c) => c.collectionName == 'products');
+      if(products_collection)
+      return;
+      else
+      this.insertProducts();
     }
     async insertProducts()
     {
@@ -50,23 +42,6 @@ export class ProductsService
           res.on('end',()=>{
             ps = JSON.parse(rawData);
             console.log(ps.products);
-            /*
-            for(let p in ps.products)
-            {
-              let {prod,images} = p;
-              for(let img in images)
-              {
-                http.get(img),(res)=>
-                {
-                  let rawData;
-                  res.on('data',(chunk) => rawData+= chunk);
-                  res.on('end',()=>{
-                    
-                  })
-                }
-              }
-            }
-            */ 
             this.db.collection('products').insertMany(ps.products).then((res)=>{
              console.log('inerted ' + res.insertedCount + ' products.');
              for(let id in res.insertedIds)
@@ -118,7 +93,7 @@ export class ProductsService
         await this.db.collection('products').updateOne(product,{stock:product.stock-items[i].quantity,sold:product.sold+ items[i].quantity});
       }
       //make order request to actual product store;
-      let orderId = crypto.createHash('sha-256').update(new Date().toString() + items.toString()).digest('hex'); 
+      let orderId = crypto.createHash('sha256').update(new Date().toString() + items.toString()).digest('hex'); 
       this.db.collection('orders').insertOne({OrderId:orderId,date:new Date().toString(),userId:t.userId});
     }
     async getAllProducts()
@@ -179,7 +154,7 @@ export class ProductsService
       let result = await this.db.collection('products').find({title:new RegExp('(' + query + ')(.)*','i')}).toArray();
       //  let pwo;
       return result;
-       if(!this.products)
+      /* if(!this.products)
        {
        
        }
@@ -192,7 +167,7 @@ export class ProductsService
           result.push(prod)
         })
         return result;
-       }
+       }*/
     }
     async getImage(id)
     {
