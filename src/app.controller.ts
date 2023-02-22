@@ -25,7 +25,7 @@ if(status.code == 0)
 }
 
 }
-@Post('/login')
+@Post('/accounts/login')
 @Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app')
 async login(@Req() req)
 {
@@ -51,7 +51,7 @@ async login(@Req() req)
    }
   }
 }
-@Options('/login')
+@Options('/accounts/login')
 @Header('Allow','POST')
 @Header('Access-Control-Allow-Origin','*')
 @Header('Access-Control-Allow-Headers','content-type,access-control-allow-origin')
