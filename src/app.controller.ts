@@ -1,9 +1,5 @@
 import { Controller, Get ,Query,Param, Post, Redirect, UseGuards,Header,Req,Res, Options, Head} from '@nestjs/common';
-import { reduce } from 'rxjs';
 import { AccountsService } from './accounts/accounts.service';
-
-import {AuthGuard} from '@nestjs/passport'
-import { readFileSync } from 'fs';
 import { Request, Response } from 'express';
 import { ProductsService } from './products/products.service';
 const stripe = require('stripe')(process.env.STRIPE_TEST_API_KEY);
@@ -11,7 +7,9 @@ const stripe = require('stripe')(process.env.STRIPE_TEST_API_KEY);
 export class AppController {
   constructor(private readonly accountsService:AccountsService,private readonly productsService:ProductsService) {}
 @Post('/accounts/create')
-@Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app,http://localhost:3000')
+@Header('Allow','POST')
+@Header('Access-Control-Allow-Origin','*')
+@Header('Access-Control-Allow-Headers','content-type,access-control-allow-origin')
 async create(@Req() req,@Res() res)
 {
 let e = req.body.email;
@@ -26,7 +24,9 @@ if(status.code == 0)
 
 }
 @Post('/accounts/login')
-@Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app')
+@Header('Allow','POST')
+@Header('Access-Control-Allow-Origin','*')
+@Header('Access-Control-Allow-Headers','content-type,access-control-allow-origin')
 async login(@Req() req)
 {
   
@@ -98,7 +98,7 @@ async purchase(@Req() req:Request,@Res() res:Response)
         line_items: req.body.its,
         mode: 'payment',
         success_url: 'https://topshop-five.vercel.app/',
-        cancel_url: 'http://localhost:23000/purchase-fail/'+req.body.uid,
+        cancel_url: 'http://topshop-five.vercel.app/purchase-fail/'+req.body.uid,
       }); 
       res.json({url:session.url,error:0});
     }

@@ -10,20 +10,14 @@ export class ProductsService
     products = [];
     ids = [];
     constructor()
-    {
+    { 
     
-    
-   
-      
-       MongoClient.connect( process.env.DB_URL+'/productsdb' + process.env.ACCESS_PARAMS).then((con)=>{
-        this.db = con.db();
-        this.bootstrap();
-       });
-      
+      this.bootstrap();
     
     }
     async bootstrap()
     {
+      this.db = (await MongoClient.connect( process.env.DB_URL+'/productsdb' + process.env.ACCESS_PARAMS)).db();
       let cols = await this.db.collections()
       let products_collection = cols.find((c) => c.collectionName == 'products');
       if(products_collection)
@@ -115,16 +109,10 @@ export class ProductsService
       // }
       // else
       // return this.products;
-      let dontsearch = true;
-      let colls = await this.db.listCollections();
-      await colls.forEach((col)=>{
-        if(col.name == 'products' || col.name == 'images')
-        {
-           dontsearch = false;
-        }
-        
-      })
-        if(!dontsearch)
+    
+      let cols = await this.db.collections();
+      let products_collection = cols.find((c) => c.collectionName == 'products');
+        if(products_collection)
         {
           try
         {
