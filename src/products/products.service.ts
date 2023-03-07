@@ -109,7 +109,8 @@ export class ProductsService
       // }
       // else
       // return this.products;
-    
+      if(!this.db)
+      return {result:null,error:"Internal Server error"};
       let cols = await this.db.collections();
       let products_collection = cols.find((c) => c.collectionName == 'products');
         if(products_collection)
@@ -139,6 +140,8 @@ export class ProductsService
     }
     async getProducts(query : String) 
     {
+      if(!this.db)
+      return {result:null,error:"Internal Server error"};
       let result = await this.db.collection('products').find({title:new RegExp('(' + query + ')(.)*','i')}).toArray();
       //  let pwo;
       return result;
@@ -159,6 +162,8 @@ export class ProductsService
     }
     async getImage(id)
     {
+      if(!this.db)
+      return {result:null,error:"Internal Server error"};
       // try
       // {
       //   let res = await this.db.collection('images').findOne({_id:id});
@@ -168,12 +173,12 @@ export class ProductsService
       // {
       //   console.log('error getting image : ' + err);
       // }
-      let res;
+      
       
      // let images =await this.db.collection('images').find({_id:new ObjectId(id.toString())});
      
      let image = await this.db.collection('images').findOne({_id:ObjectId.createFromHexString(id)});
-      return image;
+      return {image:image,error:0};
      
       
     }

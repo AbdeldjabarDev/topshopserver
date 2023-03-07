@@ -8,7 +8,7 @@ export class AppController {
   constructor(private readonly accountsService:AccountsService,private readonly productsService:ProductsService) {}
 @Post('/accounts/create')
 @Header('Allow','POST')
-@Header('Access-Control-Allow-Origin','*')
+@Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app')
 @Header('Access-Control-Allow-Headers','content-type,access-control-allow-origin')
 async create(@Req() req,@Res() res)
 {
@@ -25,7 +25,7 @@ if(status.code == 0)
 }
 @Post('/accounts/login')
 @Header('Allow','POST')
-@Header('Access-Control-Allow-Origin','*')
+@Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app')
 @Header('Access-Control-Allow-Headers','content-type,access-control-allow-origin')
 async login(@Req() req)
 {
@@ -53,7 +53,7 @@ async login(@Req() req)
 }
 @Options('/accounts/login')
 @Header('Allow','POST')
-@Header('Access-Control-Allow-Origin','*')
+@Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app')
 @Header('Access-Control-Allow-Headers','content-type,access-control-allow-origin')
 l()
 {
@@ -61,7 +61,7 @@ return '';
 }
 @Options('/accounts/create')
 @Header('Allow','POST')
-@Header('Access-Control-Allow-Origin','*')
+@Header('Access-Control-Allow-Origin','https://topshop-five.vercel.app')
 @Header('Access-Control-Allow-Headers','content-type,access-control-allow-origin')
 s()
 {

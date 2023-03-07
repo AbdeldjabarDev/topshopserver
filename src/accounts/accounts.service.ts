@@ -73,7 +73,7 @@ export class AccountsService {
     // TODO : deal with possible conflicts
    //     return this.errors[1];
     // }
-    if(possibleconflict == undefined)
+    if(possibleconflict != undefined)
     return this.errors[6];
     
     let h = crypto.createHash("sha256")

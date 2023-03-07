@@ -64,8 +64,11 @@ export class ProductsController {
   // @Header('Accept-Ranges','bytes')
   async getImage(@Res() res: Response, @Req() req: Request, @Param('id') id) {
     console.log('got id : ' + id);
-    let image = await this.productsService.getImage(id);
-    res.send(image.image.buffer);
+    let result = await this.productsService.getImage(id);
+    if(result.error == 0)
+    res.send(result.image.buffer);
+    else
+    res.send(null);
   }
   @Get('remove')
   async remove() {
