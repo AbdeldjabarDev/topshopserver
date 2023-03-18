@@ -15,8 +15,19 @@ export declare class ProductsService {
         result: any;
         error: any;
     }>;
-    getProducts(query: String): Promise<any[]>;
-    getImage(id: any): Promise<import("mongodb").WithId<import("bson").Document>>;
+    getProducts(query: String): Promise<import("mongodb").WithId<import("bson").Document>[] | {
+        result: any;
+        error: string;
+    }>;
+    getImage(id: any): Promise<{
+        result: any;
+        error: string;
+        image?: undefined;
+    } | {
+        image: import("mongodb").WithId<import("bson").Document>;
+        error: number;
+        result?: undefined;
+    }>;
     getAllImages(): Promise<import("mongodb").WithId<import("bson").Document>>;
     removeCollections(): Promise<void>;
 }

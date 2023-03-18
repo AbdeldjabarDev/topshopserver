@@ -18,22 +18,16 @@ let ProductsService = class ProductsService {
     constructor() {
         this.products = [];
         this.ids = [];
-        mongodb_1.MongoClient.connect(process.env.DB_URL + '/productsdb' + process.env.ACCESS_PARAMS).then((con) => {
-            this.db = con.db();
-            this.bootstrap();
-        });
+        this.bootstrap();
     }
     async bootstrap() {
-        let dontinsert = false;
-        let colls = await this.db.listCollections();
-        await colls.forEach((col) => {
-            if (col.name == 'products' || col.name == 'images') {
-                dontinsert = true;
-            }
-        });
-        if (!dontinsert) {
+        this.db = (await mongodb_1.MongoClient.connect(process.env.DB_URL + '/productsdb' + process.env.ACCESS_PARAMS)).db();
+        let cols = await this.db.collections();
+        let products_collection = cols.find((c) => c.collectionName == 'products');
+        if (products_collection)
+            return;
+        else
             this.insertProducts();
-        }
     }
     async insertProducts() {
         let ps;
@@ -66,19 +60,16 @@ let ProductsService = class ProductsService {
                 return { orderId: null, error: 'It is weird but somehow the client bypassed the ui constraints' };
             await this.db.collection('products').updateOne(product, { stock: product.stock - items[i].quantity, sold: product.sold + items[i].quantity });
         }
-        let orderId = crypto_1.default.createHash('sha-256').update(new Date().toString() + items.toString()).digest('hex');
+        let orderId = crypto_1.default.createHash('sha256').update(new Date().toString() + items.toString()).digest('hex');
         this.db.collection('orders').insertOne({ OrderId: orderId, date: new Date().toString(), userId: t.userId });
     }
     async getAllProducts() {
         let result, error;
-        let dontsearch = true;
-        let colls = await this.db.listCollections();
-        await colls.forEach((col) => {
-            if (col.name == 'products' || col.name == 'images') {
-                dontsearch = false;
-            }
-        });
-        if (!dontsearch) {
+        if (!this.db)
+            return { result: null, error: "Internal Server error" };
+        let cols = await this.db.collections();
+        let products_collection = cols.find((c) => c.collectionName == 'products');
+        if (products_collection) {
             try {
                 result = await this.db.collection('products').find({}).toArray();
                 this.products = result;
@@ -93,23 +84,16 @@ let ProductsService = class ProductsService {
         }
     }
     async getProducts(query) {
+        if (!this.db)
+            return { result: null, error: "Internal Server error" };
         let result = await this.db.collection('products').find({ title: new RegExp('(' + query + ')(.)*', 'i') }).toArray();
         return result;
-        if (!this.products) {
-        }
-        else {
-            let result = [];
-            this.products.forEach((prod) => {
-                if (prod.name.toString().match('(' + query + ')') || prod.tag.toString().match('(' + query + ')'))
-                    result.push(prod);
-            });
-            return result;
-        }
     }
     async getImage(id) {
-        let res;
+        if (!this.db)
+            return { result: null, error: "Internal Server error" };
         let image = await this.db.collection('images').findOne({ _id: mongodb_1.ObjectId.createFromHexString(id) });
-        return image;
+        return { image: image, error: 0 };
     }
     async getAllImages() {
         let images = await this.db.collection('images').find({}).toArray();

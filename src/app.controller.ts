@@ -104,7 +104,7 @@ async purchase(@Req() req:Request,@Res() res:Response)
     }
     catch(_err)
     {
-    console.log(err);
+    console.log("error creating checkout session : " + _err.toString());
     await this.accountsService.unregisterPurchase(req.body.uid);
     res.json({url:undefined,error:2});
     }

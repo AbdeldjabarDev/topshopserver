@@ -25,7 +25,7 @@ export declare class AccountsService {
         userId?: undefined;
     } | {
         token: string;
-        age: string;
+        age: number;
         userId: any;
         status?: undefined;
     }>;

@@ -28,6 +28,7 @@ let AccountsService = class AccountsService {
             { code: 3, message: 'Token is invalid' },
             { code: 4, message: 'Account does not exist' },
             { code: 5, message: '' },
+            { code: 6, message: 'Token Expired login again' }
         ];
         this.bootstrap();
     }
@@ -55,7 +56,9 @@ let AccountsService = class AccountsService {
         this.Report = reportConnection.model('Report', reportSchema);
     }
     async createAccount(email, pass_hash) {
-        let possibleconflict = await this.Account.find({ email: email });
+        let possibleconflict = await this.Account.findOne({ email: email });
+        if (possibleconflict != undefined)
+            return this.errors[6];
         let h = crypto.createHash("sha256");
         h.update(email + pass_hash + Math.ceil(Math.random() * 100000) + new Date().toUTCString());
         let newAccount = new this.Account({
@@ -94,7 +97,7 @@ let AccountsService = class AccountsService {
     }
     async createWebToken(_email, pass_hash) {
         let ch = await this.Account.findOne({ email: _email });
-        let h = crypto.createHash('sha1');
+        let h = crypto.createHash('sha256');
         h.update(ch.password_hash);
         console.log('createWebToken : ' + ch.email + ':' + ch.password_hash);
         if (pass_hash !== h.digest().toString('hex'))
@@ -106,20 +109,22 @@ let AccountsService = class AccountsService {
             .digest();
         let token = new this.Token({
             token: ctoken.toString('base64'),
-            age: '84000',
+            age: 84000 + new Date().getTime() / 1000,
             userId: ch.uid,
         });
         await token.save();
-        setTimeout(() => {
-            this.Token.deleteOne({ token: token });
-        }, 840000);
-        return { token: ctoken.toString('base64'), age: '84000', userId: ch.uid };
+        return { token: ctoken.toString('base64'), age: 84000, userId: ch.uid };
     }
     async checkWebToken(c_token) {
         let t = await this.Token.findOne({ token: c_token });
         console.log('found token : ' + t.token);
-        if (t === (null || undefined)) {
+        if (!t) {
             return this.errors[3];
+        }
+        else {
+            if (t.age < new Date().getTime() / 1000) {
+                return this.errors[6];
+            }
         }
         return this.errors[0];
     }
@@ -129,16 +134,15 @@ let AccountsService = class AccountsService {
     }
     async checkAccount(_email, pass_hash) {
         let acc = await this.Account.findOne({ email: _email });
+        let hash = crypto.createHash("sha256");
         if (acc === null) {
             return { status: this.errors[4].code, user: null };
         }
         console.log('checkAccount : ' + acc.email + ':' + acc.password_hash);
-        let h = crypto.createHash('sha1');
-        h.update(acc.password_hash);
-        let p_hash = h.digest().toString('hex');
-        if (p_hash != pass_hash) {
+        hash.update(acc.password_hash);
+        if (hash.digest().toString('hex') != pass_hash) {
             console.log('real password hash : ' +
-                p_hash +
+                acc.password_hash +
                 'given password hash: ' +
                 pass_hash);
             return { status: this.errors[2].code, user: null };

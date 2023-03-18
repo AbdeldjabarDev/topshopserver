@@ -69,8 +69,8 @@ let AppController = class AppController {
                 const session = await stripe.checkout.sessions.create({
                     line_items: req.body.its,
                     mode: 'payment',
-                    success_url: 'https://topshop-five.vercel.app/',
-                    cancel_url: 'http://localhost:23000/purchase-fail/' + req.body.uid,
+                    success_url: 'https://topshop-five.vercel.app/purchase-sucess',
+                    cancel_url: 'http://topshop-five.vercel.app/purchase-fail/' + req.body.uid,
                 });
                 res.json({ url: session.url, error: 0 });
             }
@@ -83,7 +83,7 @@ let AppController = class AppController {
     }
     async unregisterPurchase(uid, res, req) {
         await this.accountsService.unregisterPurchase(uid);
-        res.redirect('https://topshop-five.vercel.app/purchase-failed');
+        res.redirect('https://topshop-five.vercel.app/');
     }
     removeCodes() {
         this.accountsService.dropCodes();
@@ -169,7 +169,9 @@ let AppController = class AppController {
 };
 __decorate([
     (0, common_1.Post)('/accounts/create'),
+    (0, common_1.Header)('Allow', 'POST'),
     (0, common_1.Header)('Access-Control-Allow-Origin', 'https://topshop-five.vercel.app'),
+    (0, common_1.Header)('Access-Control-Allow-Headers', 'content-type,access-control-allow-origin'),
     __param(0, (0, common_1.Req)()),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
@@ -177,17 +179,19 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "create", null);
 __decorate([
-    (0, common_1.Post)('/login'),
+    (0, common_1.Post)('/accounts/login'),
+    (0, common_1.Header)('Allow', 'POST'),
     (0, common_1.Header)('Access-Control-Allow-Origin', 'https://topshop-five.vercel.app'),
+    (0, common_1.Header)('Access-Control-Allow-Headers', 'content-type,access-control-allow-origin'),
     __param(0, (0, common_1.Req)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], AppController.prototype, "login", null);
 __decorate([
-    (0, common_1.Options)('/login'),
+    (0, common_1.Options)('/accounts/login'),
     (0, common_1.Header)('Allow', 'POST'),
-    (0, common_1.Header)('Access-Control-Allow-Origin', '*'),
+    (0, common_1.Header)('Access-Control-Allow-Origin', 'https://topshop-five.vercel.app'),
     (0, common_1.Header)('Access-Control-Allow-Headers', 'content-type,access-control-allow-origin'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -196,7 +200,7 @@ __decorate([
 __decorate([
     (0, common_1.Options)('/accounts/create'),
     (0, common_1.Header)('Allow', 'POST'),
-    (0, common_1.Header)('Access-Control-Allow-Origin', '*'),
+    (0, common_1.Header)('Access-Control-Allow-Origin', 'https://topshop-five.vercel.app'),
     (0, common_1.Header)('Access-Control-Allow-Headers', 'content-type,access-control-allow-origin'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

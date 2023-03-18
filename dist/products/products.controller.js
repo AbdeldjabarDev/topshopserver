@@ -14,13 +14,11 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductsController = void 0;
 const common_1 = require("@nestjs/common");
-const accounts_service_1 = require("../accounts/accounts.service");
 const products_service_1 = require("./products.service");
 const fs = require('fs');
 let ProductsController = class ProductsController {
-    constructor(productsService, accountService) {
+    constructor(productsService) {
         this.productsService = productsService;
-        this.accountService = accountService;
     }
     async returnProducts(req, res) {
         let urlStr = req.url.toString();
@@ -45,8 +43,11 @@ let ProductsController = class ProductsController {
     }
     async getImage(res, req, id) {
         console.log('got id : ' + id);
-        let image = await this.productsService.getImage(id);
-        res.send(image.image.buffer);
+        let result = await this.productsService.getImage(id);
+        if (result.error == 0)
+            res.send(result.image.buffer);
+        else
+            res.send(null);
     }
     async remove() {
         await this.productsService.removeCollections();
@@ -95,8 +96,7 @@ __decorate([
 ], ProductsController.prototype, "remove", null);
 ProductsController = __decorate([
     (0, common_1.Controller)('products'),
-    __metadata("design:paramtypes", [products_service_1.ProductsService,
-        accounts_service_1.AccountsService])
+    __metadata("design:paramtypes", [products_service_1.ProductsService])
 ], ProductsController);
 exports.ProductsController = ProductsController;
 //# sourceMappingURL=products.controller.js.map
