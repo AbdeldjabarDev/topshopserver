@@ -97,7 +97,7 @@ async purchase(@Req() req:Request,@Res() res:Response)
       const session = await stripe.checkout.sessions.create({
         line_items: req.body.its,
         mode: 'payment',
-        success_url: 'https://topshop-five.vercel.app/',
+        success_url: 'https://topshop-five.vercel.app/purchase-sucess',
         cancel_url: 'http://topshop-five.vercel.app/purchase-fail/'+req.body.uid,
       }); 
       res.json({url:session.url,error:0});
@@ -124,7 +124,7 @@ async purchase(@Req() req:Request,@Res() res:Response)
 async unregisterPurchase(@Param('uid') uid,@Res() res,@Req() req)
 {
 await this.accountsService.unregisterPurchase(uid);
-res.redirect('https://topshop-five.vercel.app/purchase-failed')
+res.redirect('https://topshop-five.vercel.app/')
 }
 // @Header('Allow','POST')
 // @Header('Access-Control-Allow-Origin','*')

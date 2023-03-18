@@ -169,14 +169,16 @@ export class AccountsService {
   }
   async checkAccount(_email, pass_hash) {
     let acc = await this.Account.findOne({ email: _email });
+    let hash = crypto.createHash("sha256");
+   
     if(acc === null)
     {
         return {status:this.errors[4].code,user:null}
     }
    
     console.log('checkAccount : ' + acc.email + ':' + acc.password_hash);
-    
-    if (acc.password_hash != pass_hash) {
+    hash.update(acc.password_hash);
+    if (hash.digest().toString('hex') != pass_hash) {
       console.log(
         'real password hash : ' +
           acc.password_hash +
